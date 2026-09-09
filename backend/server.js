@@ -52,7 +52,12 @@ app.use(cors({
 
 // Optionally serve the frontend from this backend.
 if (String(process.env.SERVE_FRONTEND).toLowerCase() !== 'false') {
-  app.use(express.static(path.join(__dirname, '..', 'frontend')));
+  // In production (Railway), frontend is copied to backend/public during build.
+  // In local dev, it lives at ../frontend.
+  const publicDir  = path.join(__dirname, 'public');
+  const frontendDir = path.join(__dirname, '..', 'frontend');
+  const serveDir = fs.existsSync(publicDir) ? publicDir : frontendDir;
+  app.use(express.static(serveDir));
 }
 
 // Required fields the form must supply before we generate.
