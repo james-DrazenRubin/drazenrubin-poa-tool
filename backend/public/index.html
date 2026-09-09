@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POA Document Assembly — Drazen Rubin Law</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div>
+        <h1>Power of Attorney</h1>
+        <p class="header-sub">Connecticut Statutory Durable &mdash; Document Assembly</p>
+      </div>
+      <p class="firm-name">Drazen Rubin Law</p>
+    </div>
+  </header>
+
+  <div id="pp-banner" class="pp-banner pp-banner--hidden" role="status"></div>
+
+  <main class="form-container">
+
+    <!-- ── Checklist upload ───────────────────────────────────────────────── -->
+    <div class="checklist-card" id="checklist-card">
+      <div class="checklist-card-header">
+        <h2 class="checklist-card-title">Start from Intake Checklist</h2>
+        <p class="checklist-card-sub">Upload the client&rsquo;s intake checklist PDF to prefill the form. Review all prefilled fields before generating.</p>
+      </div>
+
+      <div class="checklist-upload-row">
+        <label class="checklist-file-label" for="checklist-file">
+          <span id="checklist-file-name" class="checklist-file-name">No file chosen</span>
+          <input type="file" id="checklist-file" accept=".pdf" class="checklist-file-input">
+          <span class="checklist-file-btn">Choose PDF</span>
+        </label>
+        <button type="button" id="btn-parse-checklist" class="btn-primary btn-parse" disabled>Parse &amp; Prefill</button>
+      </div>
+
+      <div id="checklist-status" class="checklist-status" hidden></div>
+
+      <!-- Two-client selection — shown when checklist has 2 clients -->
+      <div id="client-select" class="client-select" hidden>
+        <p class="client-select-prompt">This checklist has two clients. Select which one to prefill:</p>
+        <div id="client-buttons" class="client-buttons"></div>
+      </div>
+
+      <!-- Parse result info — POA type warning, SSN, additional powers notes -->
+      <div id="parse-info" class="parse-info" hidden></div>
+    </div>
+
+    <form id="poa-form" novalidate>
+
+      <!-- ── POA Type ────────────────────────────────────────────────────── -->
+      <section class="form-section" id="sec-poa-type">
+        <h2 class="section-heading">POA Type</h2>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="poa_type" id="poa_type_durable" value="durable" checked>
+            <strong>Statutory Durable</strong> <span class="radio-hint">(effective immediately)</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="poa_type" id="poa_type_contingent" value="contingent">
+            <strong>Contingency</strong> <span class="radio-hint">(effective upon incapacity as determined by two independent physicians)</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- ── 1. Principal ─────────────────────────────────────────────────── -->
+      <section class="form-section" id="sec-principal">
+        <h2 class="section-heading">1. Principal</h2>
+
+        <div class="pp-search-group" id="pp-search-principal">
+          <span class="pp-search-label">Look up in Practice Panther</span>
+          <div class="pp-search-wrap">
+            <input type="text" id="pp-search-principal-input" class="pp-search-input"
+                   placeholder="Search by client name&hellip;" autocomplete="off" aria-label="Search Practice Panther for principal">
+            <div class="pp-search-results" id="pp-search-principal-results" role="listbox"></div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group field-group--wide">
+            <label class="field-label" for="principal_name">Full Name <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="principal_name" name="principal_name" class="field-input" required autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="principal_dob">Date of Birth <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="principal_dob" name="principal_dob" class="field-input" placeholder="MM/DD/YYYY" required>
+          </div>
+          <div class="field-group field-group--narrow">
+            <label class="field-label" for="principal_pronoun">Pronoun <span class="req" aria-hidden="true">*</span></label>
+            <select id="principal_pronoun" name="principal_pronoun" class="field-select" required>
+              <option value="">— Select —</option>
+              <option value="he">He / His</option>
+              <option value="she">She / Her</option>
+              <option value="they">They / Their</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group field-group--full">
+            <label class="field-label" for="principal_street_address">Street Address <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="principal_street_address" name="principal_street_address" class="field-input" required autocomplete="off">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="principal_city">City <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="principal_city" name="principal_city" class="field-input" required>
+          </div>
+          <div class="field-group field-group--xs">
+            <label class="field-label" for="principal_zip">ZIP <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="principal_zip" name="principal_zip" class="field-input" maxlength="10" required>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 2. Agents ────────────────────────────────────────────────────── -->
+      <section class="form-section" id="sec-agents">
+        <h2 class="section-heading">2. Agents</h2>
+
+        <!-- Agent 1 -->
+        <h3 class="sub-heading">Primary Agent <span class="req" aria-hidden="true">*</span></h3>
+
+        <div class="pp-search-group" id="pp-search-agent1">
+          <span class="pp-search-label">Look up in Practice Panther</span>
+          <div class="pp-search-wrap">
+            <input type="text" id="pp-search-agent1-input" class="pp-search-input"
+                   placeholder="Search by name&hellip;" autocomplete="off" aria-label="Search Practice Panther for agent">
+            <div class="pp-search-results" id="pp-search-agent1-results" role="listbox"></div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group field-group--wide">
+            <label class="field-label" for="agent1_name">Full Name <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="agent1_name" name="agent1_name" class="field-input" required autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="agent1_dob">Date of Birth <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="agent1_dob" name="agent1_dob" class="field-input" placeholder="MM/DD/YYYY" required>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group field-group--full">
+            <label class="field-label" for="agent1_street_address">Street Address <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="agent1_street_address" name="agent1_street_address" class="field-input" required autocomplete="off">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="agent1_city">City <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="agent1_city" name="agent1_city" class="field-input" required>
+          </div>
+          <div class="field-group field-group--xs">
+            <label class="field-label" for="agent1_state">State <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="agent1_state" name="agent1_state" class="field-input" maxlength="2" required>
+          </div>
+          <div class="field-group field-group--xs">
+            <label class="field-label" for="agent1_zip">ZIP <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="agent1_zip" name="agent1_zip" class="field-input" maxlength="10" required>
+          </div>
+        </div>
+
+        <!-- Co-Agent toggle -->
+        <div class="optional-toggle">
+          <label class="toggle-label">
+            <input type="checkbox" id="toggle-agent2" class="toggle-cb">
+            Add a Co-Agent
+          </label>
+        </div>
+
+        <div class="optional-block" id="block-agent2" hidden>
+          <h3 class="sub-heading">Co-Agent</h3>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Co-Agent Authority <span class="req" aria-hidden="true">*</span></label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="agent_authority" value="severally">
+                  Act Severally <span class="radio-hint">(each agent may act independently)</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="agent_authority" value="jointly">
+                  Act Jointly <span class="radio-hint">(agents must act together)</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group field-group--wide">
+              <label class="field-label" for="agent2_name">Full Name</label>
+              <input type="text" id="agent2_name" name="agent2_name" class="field-input" autocomplete="off">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="agent2_dob">Date of Birth</label>
+              <input type="text" id="agent2_dob" name="agent2_dob" class="field-input" placeholder="MM/DD/YYYY">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group field-group--full">
+              <label class="field-label" for="agent2_street_address">Street Address</label>
+              <input type="text" id="agent2_street_address" name="agent2_street_address" class="field-input" autocomplete="off">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label" for="agent2_city">City</label>
+              <input type="text" id="agent2_city" name="agent2_city" class="field-input">
+            </div>
+            <div class="field-group field-group--xs">
+              <label class="field-label" for="agent2_state">State</label>
+              <input type="text" id="agent2_state" name="agent2_state" class="field-input" maxlength="2">
+            </div>
+            <div class="field-group field-group--xs">
+              <label class="field-label" for="agent2_zip">ZIP</label>
+              <input type="text" id="agent2_zip" name="agent2_zip" class="field-input" maxlength="10">
+            </div>
+          </div>
+        </div>
+
+        <!-- Successors toggle -->
+        <div class="optional-toggle">
+          <label class="toggle-label">
+            <input type="checkbox" id="toggle-successors" class="toggle-cb">
+            Add Successor Agent(s)
+          </label>
+        </div>
+
+        <div class="optional-block" id="block-successors" hidden>
+          <h3 class="sub-heading">Successor Agent 1</h3>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label" for="successor1_name">Full Name</label>
+              <input type="text" id="successor1_name" name="successor1_name" class="field-input" autocomplete="off">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="successor1_address">Address</label>
+              <input type="text" id="successor1_address" name="successor1_address" class="field-input" autocomplete="off">
+            </div>
+          </div>
+
+          <h3 class="sub-heading">Successor Agent 2</h3>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label" for="successor2_name">Full Name</label>
+              <input type="text" id="successor2_name" name="successor2_name" class="field-input" autocomplete="off">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="successor2_address">Address</label>
+              <input type="text" id="successor2_address" name="successor2_address" class="field-input" autocomplete="off">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 3. Powers ────────────────────────────────────────────────────── -->
+      <section class="form-section" id="sec-powers">
+        <h2 class="section-heading">3. Powers</h2>
+
+        <h3 class="sub-heading">Standard Powers</h3>
+        <p class="section-note">Powers A&ndash;N are always included in every document.</p>
+
+        <h3 class="sub-heading" style="margin-top:24px;">Estate Planning Powers</h3>
+        <div class="caution-box">
+          <strong>CAUTION:</strong> Granting estate planning powers is a significant decision with important legal and tax implications. The attorney must review these selections carefully before finalizing.
+        </div>
+        <div class="powers-grid" id="estate-powers-grid"></div>
+        <div class="powers-actions">
+          <button type="button" id="btn-select-all-est" class="btn-sm">Select All O&ndash;X</button>
+          <button type="button" id="btn-clear-est" class="btn-sm">Clear</button>
+        </div>
+      </section>
+
+      <!-- ── 4. Special Provisions ────────────────────────────────────────── -->
+      <section class="form-section" id="sec-provisions">
+        <h2 class="section-heading">4. Special Provisions</h2>
+        <p class="section-note">Leave blank to use the firm&rsquo;s standard Special Provisions (21 default items). Enter text here to replace the default entirely.</p>
+        <textarea id="specialProvisions" name="specialProvisions" class="field-textarea" rows="8"
+                  placeholder="Leave blank for firm default&hellip;"></textarea>
+      </section>
+
+      <!-- ── 5. Execution ─────────────────────────────────────────────────── -->
+      <section class="form-section" id="sec-execution">
+        <h2 class="section-heading">5. Execution</h2>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="signing_date">Date of Signing <span class="req" aria-hidden="true">*</span></label>
+            <input type="date" id="signing_date" name="signing_date" class="field-input" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="signing_city">City <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="signing_city" name="signing_city" class="field-input" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="signing_county">County <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="signing_county" name="signing_county" class="field-input" required>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 6. Witnesses ─────────────────────────────────────────────────── -->
+      <section class="form-section" id="sec-witnesses">
+        <h2 class="section-heading">6. Witnesses</h2>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="witness1_name">Witness 1 Full Name <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="witness1_name" name="witness1_name" class="field-input" required autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="witness2_name">Witness 2 Full Name <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="witness2_name" name="witness2_name" class="field-input" required autocomplete="off">
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 7. Notary ────────────────────────────────────────────────────── -->
+      <section class="form-section" id="sec-notary">
+        <h2 class="section-heading">7. Notary</h2>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="notary_name">Notary Full Name <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="notary_name" name="notary_name" class="field-input" required autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="notary_commission_expiration">Commission Expiration <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="notary_commission_expiration" name="notary_commission_expiration"
+                   class="field-input" placeholder="MM/DD/YYYY" required>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 8. Ancillary Documents ───────────────────────────────────────── -->
+      <section class="form-section" id="sec-ancillary">
+        <h2 class="section-heading">8. Ancillary Documents</h2>
+        <p class="section-note">Select any additional estate-planning documents to generate alongside the POA. They will be downloaded as a separate ZIP file.</p>
+
+        <!-- ── 8A. Designation of Conservator ── -->
+        <div class="optional-toggle">
+          <label class="toggle-label"><input type="checkbox" id="anc-conservator" class="toggle-cb anc-toggle"> Designation of Conservator</label>
+        </div>
+        <div class="optional-block" id="block-conservator" hidden>
+          <p class="section-note" style="margin-bottom:14px;">List up to 3 designees in order of preference. The same list applies to both Conservator of Person and Conservator of Estate.</p>
+          <div class="field-row">
+            <div class="field-group field-group--wide"><label class="field-label" for="conservator1_name">Designee 1 Full Name</label><input type="text" id="conservator1_name" name="conservator1_name" class="field-input" autocomplete="off"></div>
+            <div class="field-group"><label class="field-label" for="conservator1_dob">DOB</label><input type="text" id="conservator1_dob" name="conservator1_dob" class="field-input" placeholder="MM/DD/YYYY"></div>
+          </div>
+          <div class="field-row">
+            <div class="field-group field-group--wide"><label class="field-label" for="conservator2_name">Designee 2 Full Name</label><input type="text" id="conservator2_name" name="conservator2_name" class="field-input" autocomplete="off"></div>
+            <div class="field-group"><label class="field-label" for="conservator2_dob">DOB</label><input type="text" id="conservator2_dob" name="conservator2_dob" class="field-input" placeholder="MM/DD/YYYY"></div>
+          </div>
+          <div class="field-row">
+            <div class="field-group field-group--wide"><label class="field-label" for="conservator3_name">Designee 3 Full Name</label><input type="text" id="conservator3_name" name="conservator3_name" class="field-input" autocomplete="off"></div>
+            <div class="field-group"><label class="field-label" for="conservator3_dob">DOB</label><input type="text" id="conservator3_dob" name="conservator3_dob" class="field-input" placeholder="MM/DD/YYYY"></div>
+          </div>
+        </div>
+
+        <!-- ── 8B. Revocation of Prior POA ── -->
+        <div class="optional-toggle">
+          <label class="toggle-label"><input type="checkbox" id="anc-revocation" class="toggle-cb anc-toggle"> Revocation of Prior Power of Attorney</label>
+        </div>
+        <div class="optional-block" id="block-revocation" hidden>
+          <div class="field-row">
+            <div class="field-group"><label class="field-label" for="prior_poa_date">Date of Prior POA <span class="req" aria-hidden="true">*</span></label><input type="text" id="prior_poa_date" name="prior_poa_date" class="field-input" placeholder="MM/DD/YYYY"></div>
+            <div class="field-group field-group--wide"><label class="field-label" for="prior_agent_name">Prior Agent Full Name <span class="req" aria-hidden="true">*</span></label><input type="text" id="prior_agent_name" name="prior_agent_name" class="field-input" autocomplete="off"></div>
+          </div>
+        </div>
+
+        <!-- ── 8C. Disposition of Remains ── -->
+        <div class="optional-toggle">
+          <label class="toggle-label"><input type="checkbox" id="anc-disposition" class="toggle-cb anc-toggle"> Disposition of Remains</label>
+        </div>
+        <div class="optional-block" id="block-disposition" hidden>
+          <div class="field-row">
+            <div class="field-group field-group--full">
+              <label class="field-label" for="disposition_directions">Disposition Instructions <span class="req" aria-hidden="true">*</span></label>
+              <textarea id="disposition_directions" name="disposition_directions" class="field-textarea" rows="4" placeholder="Describe the desired disposition of remains&hellip;"></textarea>
+            </div>
+          </div>
+          <h3 class="sub-heading">Primary Agent</h3>
+          <div class="field-row">
+            <div class="field-group field-group--wide"><label class="field-label" for="disposition_agent1_name">Full Name <span class="req" aria-hidden="true">*</span></label><input type="text" id="disposition_agent1_name" name="disposition_agent1_name" class="field-input" autocomplete="off"></div>
+          </div>
+          <div class="field-row">
+            <div class="field-group field-group--full"><label class="field-label" for="disposition_agent1_address_phone">Address &amp; Phone <span class="req" aria-hidden="true">*</span></label><input type="text" id="disposition_agent1_address_phone" name="disposition_agent1_address_phone" class="field-input" placeholder="123 Main St, City, CT 00000 — (555) 555-5555"></div>
+          </div>
+          <div class="optional-toggle">
+            <label class="toggle-label"><input type="checkbox" id="toggle-disposition-agent2" class="toggle-cb"> Add Backup Agent</label>
+          </div>
+          <div class="optional-block" id="block-disposition-agent2" hidden>
+            <h3 class="sub-heading">Backup Agent</h3>
+            <div class="field-row">
+              <div class="field-group field-group--wide"><label class="field-label" for="disposition_agent2_name">Full Name</label><input type="text" id="disposition_agent2_name" name="disposition_agent2_name" class="field-input" autocomplete="off"></div>
+            </div>
+            <div class="field-row">
+              <div class="field-group field-group--full"><label class="field-label" for="disposition_agent2_address_phone">Address &amp; Phone</label><input type="text" id="disposition_agent2_address_phone" name="disposition_agent2_address_phone" class="field-input" placeholder="123 Main St, City, CT 00000 — (555) 555-5555"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 8D. Health Care Instructions ── -->
+        <div class="optional-toggle">
+          <label class="toggle-label"><input type="checkbox" id="anc-hci" class="toggle-cb anc-toggle"> Health Care Instructions</label>
+        </div>
+        <div class="optional-block" id="block-hci" hidden>
+          <div class="hci-mode-toggle">
+            <label class="radio-label"><input type="radio" name="hci_mode" value="standard" checked> Standard HCI form</label>
+            <label class="radio-label"><input type="radio" name="hci_mode" value="custom"> Custom (paste full document body)</label>
+          </div>
+
+          <!-- Standard HCI fields -->
+          <div id="hci-standard">
+            <h3 class="sub-heading">Health Care Agent (Primary)</h3>
+            <div class="field-row">
+              <div class="field-group field-group--wide"><label class="field-label" for="hca_name">Full Name <span class="req" aria-hidden="true">*</span></label><input type="text" id="hca_name" name="hca_name" class="field-input" autocomplete="off"></div>
+              <div class="field-group"><label class="field-label" for="hca_dob">DOB <span class="req" aria-hidden="true">*</span></label><input type="text" id="hca_dob" name="hca_dob" class="field-input" placeholder="MM/DD/YYYY"></div>
+            </div>
+
+            <h3 class="sub-heading">Alternate HCA(s) <span class="field-label" style="text-transform:none;letter-spacing:0;">(determines template variant: 0 alts → A, 1 → B, 2+ → C)</span></h3>
+            <div id="alt-hca-list">
+              <div class="field-row alt-hca-row" data-idx="1">
+                <div class="field-group field-group--wide"><label class="field-label" for="alt_hca_1_name">Alternate 1 Full Name</label><input type="text" id="alt_hca_1_name" name="alt_hca_1_name" class="field-input" autocomplete="off"></div>
+                <div class="field-group"><label class="field-label" for="alt_hca_1_dob">DOB</label><input type="text" id="alt_hca_1_dob" name="alt_hca_1_dob" class="field-input" placeholder="MM/DD/YYYY"></div>
+              </div>
+              <div class="field-row alt-hca-row" id="alt-hca-row-2" hidden data-idx="2">
+                <div class="field-group field-group--wide"><label class="field-label" for="alt_hca_2_name">Alternate 2 Full Name</label><input type="text" id="alt_hca_2_name" name="alt_hca_2_name" class="field-input" autocomplete="off"></div>
+                <div class="field-group"><label class="field-label" for="alt_hca_2_dob">DOB</label><input type="text" id="alt_hca_2_dob" name="alt_hca_2_dob" class="field-input" placeholder="MM/DD/YYYY"></div>
+              </div>
+              <div class="field-row alt-hca-row" id="alt-hca-row-3" hidden data-idx="3">
+                <div class="field-group field-group--wide"><label class="field-label" for="alt_hca_3_name">Alternate 3 Full Name</label><input type="text" id="alt_hca_3_name" name="alt_hca_3_name" class="field-input" autocomplete="off"></div>
+                <div class="field-group"><label class="field-label" for="alt_hca_3_dob">DOB</label><input type="text" id="alt_hca_3_dob" name="alt_hca_3_dob" class="field-input" placeholder="MM/DD/YYYY"></div>
+              </div>
+            </div>
+            <div id="hci-variant-badge" class="hci-variant-badge">Variant A — no alternates</div>
+
+            <h3 class="sub-heading" style="margin-top:20px;">Preferences</h3>
+            <label class="toggle-label" style="margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" id="hci_home_care_preference" name="hci_home_care_preference" checked>
+              Include home-care preference sentence
+            </label>
+
+            <h3 class="sub-heading">Organ Donation</h3>
+            <div class="radio-group" style="margin-bottom:12px;">
+              <label class="radio-label"><input type="radio" name="hci_donate" value="all" checked> Donate any needed organs or parts</label>
+              <label class="radio-label"><input type="radio" name="hci_donate" value="specific"> Donate only specific organs or parts</label>
+            </div>
+            <div id="hci-specific-organs-block" hidden>
+              <div class="field-row">
+                <div class="field-group field-group--full"><label class="field-label" for="hci_specific_organs">Specific Organs or Parts</label><input type="text" id="hci_specific_organs" name="hci_specific_organs" class="field-input"></div>
+              </div>
+              <div class="radio-group" style="margin-bottom:12px;">
+                <label class="radio-label"><input type="radio" name="hci_purpose" value="general" checked> For any purpose (General Statutes 19a-279f)</label>
+                <label class="radio-label"><input type="radio" name="hci_purpose" value="limited"> For limited purposes only</label>
+              </div>
+              <div id="hci-limited-purpose-block" hidden>
+                <div class="field-row">
+                  <div class="field-group field-group--full"><label class="field-label" for="hci_limited_purpose">Limited Purpose Description</label><input type="text" id="hci_limited_purpose" name="hci_limited_purpose" class="field-input"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom HCI body -->
+          <div id="hci-custom" hidden>
+            <div class="caution-box" style="margin-top:14px;">Enter the complete body text of the custom health care instructions. The tool will wrap it with the standard title, client signature line, and date.</div>
+            <div class="field-row" style="margin-top:12px;">
+              <div class="field-group field-group--full">
+                <label class="field-label" for="hci_custom_body">Custom Document Body</label>
+                <textarea id="hci_custom_body" name="hci_custom_body" class="field-textarea" rows="12" placeholder="Paste or type the full custom health care instructions body here&hellip;"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Generate ancillary button -->
+        <div id="ancillary-submit-row" class="ancillary-submit-row" hidden>
+          <button type="button" id="btn-generate-ancillary" class="btn-primary btn-ancillary">Generate Ancillary Docs (.zip)</button>
+          <p class="disclaimer">These documents are <strong>DRAFT</strong> — the attorney must review before they go to a client.</p>
+        </div>
+      </section>
+
+      <!-- ── Errors + Submit ──────────────────────────────────────────────── -->
+      <div id="error-banner" class="error-banner" hidden role="alert">
+        <strong>Please complete the required fields before generating:</strong>
+        <ul id="error-list"></ul>
+      </div>
+
+      <div class="submit-row">
+        <button type="submit" id="btn-generate" class="btn-primary">Generate POA Draft (.docx)</button>
+        <p class="disclaimer">This generates a <strong>DRAFT</strong> document. The attorney must review before it goes to a client.</p>
+      </div>
+
+    </form>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
