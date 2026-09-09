@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Environment & secrets
+.env
+backend/.env
+backend/.pp-tokens.json
+
+# Generated / runtime artifacts
+backend/test-output/
+backend/logs/
+
+# Template build scratch (source XML for regenerating the .docx)
+templates/_src/
+
+# Client intake checklists — contain SSNs and DOBs, never commit
+templates/*.pdf
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
