@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test:generate": "node test/sample-generate.js"
+    "test:generate": "node test/sample-generate.js",
+    "postinstall": "node -e \"const fs=require('fs'),path=require('path');const src=path.join(__dirname,'..','frontend'),dst=path.join(__dirname,'public');if(fs.existsSync(src)){fs.cpSync(src,dst,{recursive:true});console.log('Frontend copied to backend/public');}else{console.log('No ../frontend found, skipping.');}\" "
   },
   "engines": {
     "node": ">=18"
