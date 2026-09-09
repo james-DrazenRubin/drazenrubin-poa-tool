@@ -51,7 +51,7 @@ app.use(cors({
 }));
 
 // Optionally serve the frontend from this backend.
-if (String(process.env.SERVE_FRONTEND).toLowerCase() === 'true') {
+if (String(process.env.SERVE_FRONTEND).toLowerCase() !== 'false') {
   app.use(express.static(path.join(__dirname, '..', 'frontend')));
 }
 
