@@ -94,6 +94,19 @@ app.get('/api/health', (req, res) => {
   res.json({ ok: true, service: 'drazenrubin-poa-tool', time: new Date().toISOString() });
 });
 
+app.get('/api/debug-paths', (req, res) => {
+  const publicDir   = path.join(__dirname, 'public');
+  const frontendDir = path.join(__dirname, '..', 'frontend');
+  res.json({
+    __dirname,
+    cwd: process.cwd(),
+    publicExists:   fs.existsSync(publicDir),
+    frontendExists: fs.existsSync(frontendDir),
+    publicDir,
+    frontendDir,
+  });
+});
+
 // ── Practice Panther integration ──────────────────────────────────────────────
 
 app.get('/api/pp-status', (req, res) => {
