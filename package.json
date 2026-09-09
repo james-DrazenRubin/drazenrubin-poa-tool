@@ -1,0 +1,13 @@
+{
+  "name": "drazenrubin-poa-tool",
+  "version": "1.0.0",
+  "private": true,
+  "description": "POA document assembly tool for Drazen Rubin Law",
+  "scripts": {
+    "start": "node backend/server.js",
+    "install-deps": "npm install --prefix backend"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
