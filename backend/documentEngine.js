@@ -19,8 +19,8 @@ const Docxtemplater = require('docxtemplater');
 const { STANDARD_POWERS, ESTATE_PLANNING_POWERS } = require('./powersText');
 const { DEFAULT_SPECIAL_PROVISIONS } = require('./defaultSpecialProvisions');
 
-const TEMPLATE_PATH            = path.join(__dirname, '..', 'templates', 'POA_Tagged_Template.docx');
-const CONTINGENT_TEMPLATE_PATH = path.join(__dirname, '..', 'templates', 'Contingent_POA_Tagged_Template.docx');
+const TEMPLATE_PATH            = path.join(__dirname, 'templates', 'POA_Tagged_Template.docx');
+const CONTINGENT_TEMPLATE_PATH = path.join(__dirname, 'templates', 'Contingent_POA_Tagged_Template.docx');
 
 // All simple {{placeholder}} fields, mapped from the submitted form.
 const TEXT_FIELDS = [

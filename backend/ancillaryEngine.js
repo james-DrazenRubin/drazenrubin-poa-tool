@@ -14,7 +14,7 @@ const path = require('path');
 const PizZip        = require('pizzip');
 const Docxtemplater = require('docxtemplater');
 
-const TEMPLATE_DIR = path.join(__dirname, '..', 'templates', 'ancillary');
+const TEMPLATE_DIR = path.join(__dirname, 'templates', 'ancillary');
 
 const TEMPLATES = {
   conservator: 'Designation_of_Conservator_Tagged.docx',

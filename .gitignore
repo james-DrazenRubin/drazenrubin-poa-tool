@@ -11,10 +11,10 @@ backend/test-output/
 backend/logs/
 
 # Template build scratch (source XML for regenerating the .docx)
-templates/_src/
+backend/templates/_src/
 
 # Client intake checklists — contain SSNs and DOBs, never commit
-templates/*.pdf
+backend/templates/*.pdf
 
 # OS / editor
 .DS_Store

@@ -53,7 +53,7 @@ backend/server.js               Express API (POST /api/generate-poa)
 backend/documentEngine.js       Merge logic — decides what's included; never rewrites law
 backend/powersText.js           All 24 powers, VERBATIM (single source of truth)
 backend/defaultSpecialProvisions.js   Firm's standard Special Provisions default
-templates/POA_Tagged_Template.docx    The tagged Word template
+backend/templates/POA_Tagged_Template.docx    The tagged Word template
 ```
 
 ## Conversation/build order is fixed
